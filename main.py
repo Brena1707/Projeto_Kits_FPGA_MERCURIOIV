@@ -20,10 +20,11 @@ prefixo = StringVar()
 check_vhdl = BooleanVar()
 check_v = BooleanVar()
 check_clock = BooleanVar()
-check_SDRAM_64 = BooleanVar()
+check_PROTO_A = BooleanVar()
+check_PROTO_B = BooleanVar()
 check_segmentos = BooleanVar()
 check_chave = BooleanVar()
-check_LED = BooleanVar()
+check_LED_MATRIX = BooleanVar()
 check_button = BooleanVar()
 check_VGA = BooleanVar()
 check_GPIO = BooleanVar()
@@ -31,16 +32,18 @@ check_LCD = BooleanVar()
 check_Ethernet = BooleanVar()
 check_I2C = BooleanVar()
 check_RS232 = BooleanVar()
-check_micro_SD = BooleanVar()
-check_SDRAM_512 = BooleanVar()
+check_SD_CARD = BooleanVar()
+check_SDRAM = BooleanVar()
 check_PMOD = BooleanVar()
-check_flash_64 = BooleanVar()
+check_flash = BooleanVar()
 check_LED_RGB = BooleanVar()
 check_ADC = BooleanVar()
 check_DAC = BooleanVar()
 check_SA_SB = BooleanVar()
 check_ext_clock = BooleanVar()
 check_SW = BooleanVar()
+check_USB = BooleanVar()
+check_UART = BooleanVar()
 check_ConnectGPIO = BooleanVar()
 
 def get_diretorio_arquivos():
@@ -116,7 +119,7 @@ def gerar_arquivo_qsf(diretorio=''):
         segmentos_buffer = f.read()
         f.close()
 
-    if check_LED.get():
+    if check_LED_MATRIX.get():
         f = open('auxiliar/qsf/LED_MX.aux', 'r')
         led_buffer = f.read()
         f.close()
@@ -156,12 +159,12 @@ def gerar_arquivo_qsf(diretorio=''):
         dac_buffer = f.read()
         f.close()
 
-    if check_micro_SD.get():
+    if check_SD_CARD.get():
         f = open('auxiliar/qsf/SD_CARD.aux', 'r')
         micro_sd_buffer = f.read()
         f.close()
 
-    if check_SDRAM_64.get():
+    if check_SDRAM.get():
         f = open('auxiliar/qsf/SDRAM.aux', 'r')
         sdram_64_buffer = f.read()
         f.close()
@@ -264,7 +267,7 @@ def gerar_arquivo_qsf(diretorio=''):
             qsf.write(segmentos_buffer)
             qsf.write('\n')
 
-        if check_LED.get():
+        if check_LED_MATRIX.get():
             qsf.write(led_buffer)
             qsf.write('\n')
 
@@ -298,11 +301,11 @@ def gerar_arquivo_qsf(diretorio=''):
             qsf.write(dac_buffer)
             qsf.write('\n')
 
-        if check_micro_SD.get():
+        if check_SD_CARD.get():
             qsf.write(micro_sd_buffer)
             qsf.write('\n')
 
-        if check_SDRAM_64.get():
+        if check_SDRAM.get():
             qsf.write(sdram_64_buffer)
             qsf.write('\n')
 
@@ -356,55 +359,164 @@ def gerar_arquivo_v(diretorio=''):
 
     if check_clock.get():
         v.write('\t//////////// CLOCK ////////////\n')
-        v.write('\tinput\t\t\t\t\tADC_CLK_10,\n\tinput\t\t\t\t\tMAX10_CLK1_50,\n\tinput\t\t\t\t\tMAX10_CLK2_50\n')
-    if check_SDRAM_64.get():
-        v.write('\n\t//////////// SDRAM ////////////\n')
-        v.write('\toutput\t\t[12:0]\t\tDRAM_ADDR,\n')
-        v.write('\toutput\t\t [1:0]\t\tDRAM_BA,\n')
-        v.write('\toutput\t\t      \t\tDRAM_CAS_N,\n')
-        v.write('\toutput\t\t      \t\tDRAM_CKE,\n')
-        v.write('\toutput\t\t      \t\tDRAM_CLK,\n')
-        v.write('\toutput\t\t      \t\tDRAM_CS_N,\n')
-        v.write('\tinput\t\t[15:0]\t\tDRAM_DQ,\n')
-        v.write('\toutput\t\t      \t\tDRAM_LDQM,\n')
-        v.write('\toutput\t\t      \t\tDRAM_RAS_N,\n')
-        v.write('\toutput\t\t      \t\tDRAM_UDQM,\n')
-        v.write('\toutput\t\t      \t\tDRAM_WE_N,\n')
+        v.write("input\t\t\t\tCLOCK_50MHz,\n")
+        v.write("input\t\t\t\tCLOCK1_50MHz,\n\n")
 
-    if check_segmentos.get():
-        v.write('\n\t//////////// SEG7 ////////////\n')
-        v.write('\toutput\t\t [7:0]\t\tHEX0,\n')
-        v.write('\toutput\t\t [7:0]\t\tHEX1,\n')
+    if check_ext_clock.get():
+        v.write("//////////// EXT_CLK //////////\n")
+        v.write("input\t\t\t\tSMA_CLKIN,\n")
+        v.write("input\t[1:0]\t\tGPIO0_CLKIN,\n")
+        v.write("input\t[1:0]\t\tGPIO1_CLKIN,\n")
+        v.write("output\t\t\t\tSMA_CLKOUT,\n")
+        v.write("output\t[1:0]\t\tGPIO0_CLKOUT,\n")
+        v.write("output\t[1:0]\t\tGPIO1_CLKOUT,\n\n")
+
+    if check_SW.get():
+        v.write("//////////// SW //////////\n")
+        v.write("input\t[3:0]\tSW,\n\n")
+   
+    if check_SW.get():
+        v.write("//////////// SW //////////\n")
+        v.write("input\t[3:0]\tSW,\n\n")
 
     if check_chave.get():
-        v.write('\n\t//////////// KEY ////////////\n')
-        v.write('\tinput\t\t [1:0]\t\tinput,\n')
+        v.write("//////////// KEY //////////\n")
+        v.write("input\t[11:0]\tKEY,\n\n")
 
-    if check_LED.get():
-        v.write('\n\t//////////// LED ////////////\n')
-        v.write('\toutput\t\t [7:0][4:0]\t\tLEDR,\n')
+    if check_LED_RGB.get():
+        v.write("//////////// LED_RGB //////////\n")
+        v.write("output\t\t\t\tLED_R,\n")
+        v.write("output\t\t\t\tLED_G,\n")
+        v.write("output\t\t\t\tLED_B,\n\n")
 
-    if check_VGA.get():
-        v.write('\n\t//////////// VGA ////////////\n')
-        v.write('\toutput\t\t [3:0]\t\tVGA_B,\n')
-        v.write('\toutput\t\t [3:0]\t\tVGA_G,\n')
-        v.write('\toutput\t\t      \t\tVGA_HS,\n')
-        v.write('\toutput\t\t [3:0]\t\tVGA_R,\n')
-        v.write('\toutput\t\t      \t\tVGA_VS,\n')
+    if check_segmentos.get():
+        v.write("//////////// SEG7 //////////\n")
+        v.write("output\t[7:0]\tDISP0_D,\n")
+        v.write("output\t[7:0]\tDISP1_D,\n\n")
 
-    if check_GPIO.get():
-        v.write('\n\t//////////// Accelerometer ////////////\n')
-        v.write('\toutput\t\t      \t\tGSENSOR_CS_N,\n')
-        v.write('\tinput\t\t [2:1]\t\tGSENSOR_INT,\n')
-        v.write('\toutput\t\t      \t\tGSENSOR_SCLK,\n')
-        v.write('\tinout\t\t      \t\tGSENSOR_SDI,\n')
-        v.write('\tinout\t\t      \t\tGSENSOR_SDO,\n')
+    if check_LED_MATRIX.get():
+        v.write("//////////// LED_MATRIX //////////\n")
+        v.write("output\t[4:0]\tLEDM_C,\n")
+        v.write("output\t[7:0]\tLEDM_R,\n\n")
 
     if check_LCD.get():
-        v.write('\n\t//////////// Arduino ////////////\n')
-        v.write('\tinout\t\t [15:0]\t\tARDUINO_IO,\n')
-        v.write('\tinout\t\t      \t\tARDUINO_RESET_N,\n')
+        v.write("//////////// LCD //////////\n")
+        v.write("inout\t[7:0]\tLCD_D,\n")
+        v.write("output\t\t\t\tLCD_RS,\n")
+        v.write("output\t\t\t\tLCD_RW,\n")
+        v.write("output\t\t\t\tLCD_EN,\n")
+        v.write("output\t\t\t\tLCD_BACKLIGHT,\n\n")
 
+    if check_UART.get():
+        v.write("//////////// UART //////////\n")
+        v.write("output\t\t\t\tUART_TXD,\n")
+        v.write("input\t\t\t\tUART_RXD,\n")
+        v.write("input\t\t\t\tUART_CTS,\n")
+        v.write("output\t\t\t\tUART_RTS,\n\n")
+
+    if check_VGA.get():
+        v.write("//////////// VGA //////////\n")
+        v.write("output\t[3:0]\tVGA_R,\n")
+        v.write("output\t[3:0]\tVGA_G,\n")
+        v.write("output\t[3:0]\tVGA_B,\n")
+        v.write("output\t\t\t\tVGA_HS,\n")
+        v.write("output\t\t\t\tVGA_VS,\n\n")
+
+    if check_SDRAM.get():
+        v.write("//////////// SDRAM //////////\n")
+        v.write("output\t[12:0]\tDRAM_A,\n")
+        v.write("output\t[1:0]\tDRAM_BA,\n")
+        v.write("output\t\t\t\tDRAM_CAS_N,\n")
+        v.write("output\t\t\t\tDRAM_CKE,\n")
+        v.write("output\t\t\t\tDRAM_CLK,\n")
+        v.write("output\t\t\t\tDRAM_CS_N,\n")
+        v.write("inout\t[15:0]\tDRAM_D,\n")
+        v.write("output\t\t\t\tDRAM_RAS_N,\n")
+        v.write("output\t[1:0]\tDRAM_DQM,\n")
+        v.write("output\t\t\t\tDRAM_WE_N,\n\n")
+
+    if check_USB.get():
+        v.write("//////////// USB //////////\n")
+        v.write("output\t\t\t\tUSB_WR,\n")
+        v.write("output\t\t\t\tUSB_RD,\n")
+        v.write("inout\t[7:0]\tUSB_D,\n")
+        v.write("input\t\t\t\tUSB_POWEREN_N,\n")
+        v.write("input\t\t\t\tUSB_RXF_N,\n")
+        v.write("input\t\t\t\tUSB_TXE_N,\n\n")
+
+    if check_SD_CARD.get():
+        v.write("//////////// SD_CARD //////////\n")
+        v.write("output\t\t\t\tSD_CMD,\n")
+        v.write("output\t\t\t\tSD_CLK,\n")
+        v.write("output\t\t\t\tSD_CD_N,\n")
+        v.write("inout\t[3:0]\tSD_D,\n\n")
+
+    if check_I2C.get():
+        v.write("//////////// I2C //////////\n")
+        v.write("inout\t\t\t\tI2C_SDA,\n")
+        v.write("output\t\t\t\tI2C_SCL,\n")
+        v.write("input\t\t\t\tI2C_OVERTEMP_N, //?\n\n")
+
+    if check_Ethernet.get():
+        v.write("//////////// ETHERNET //////////\n")
+        v.write("output\t\t\t\tETH_TXEN,\n")
+        v.write("output\t\t\t\tETH_TXEN,\n")
+        v.write("output\t[3:0]\tETH_TXD,\n")
+        v.write("input\t\t\t\tETH_RXER,\n")
+        v.write("input\t\t\t\tETH_RXDV,\n")
+        v.write("input\t[3:0]\tETH_RXD,\n")
+        v.write("inout\t\t\t\tETH_MDIO,\n")
+        v.write("output\t\t\t\tETH_MDC,\n")
+        v.write("input\t\t\t\tETH_CRS,\n")
+        v.write("input\t\t\t\tETH_COL,\n")
+        v.write("output\t\t\t\tETH_RST_N,\n")
+        v.write("input\t\t\t\tETH_RXCLK,\n")
+        v.write("input\t\t\t\tETH_TXCLK,\n")
+        v.write("output\t\t\t\tETH_TXER,\n\n")
+
+    if check_ADC.get():
+        v.write("//////////// ADC //////////\n")
+        v.write("output\t\t\t\tADC_CNVST,\n")
+        v.write("output\t\t\t\tADC_CS_N,\n")
+        v.write("input\t\t\t\tADC_DOUT1,\n")
+        v.write("input\t\t\t\tADC_DOUT2,\n")
+        v.write("output\t\t\t\tADC_REFSEL,\n")
+        v.write("output\t\t\t\tADC_SCLK,\n")
+        v.write("output\t\t\t\tADC_SD,\n")
+        v.write("output\t\t\t\tADC_SEL,\n")
+        v.write("output\t\t\t\tADC_UB,\n\n")
+
+    if check_DAC.get():
+        v.write("//////////// DAC //////////\n")
+        v.write("output\t\t\t\tDAC_CLR,\n")
+        v.write("output\t\t\t\tDAC_CS_N,\n")
+        v.write("output\t\t\t\tDAC_DIN,\n")
+        v.write("output\t\t\t\tDAC_SCLK,\n\n")
+
+    if check_flash.get():
+        v.write("//////////// FLASH //////////\n")
+        v.write("output\t\t\t\tFLASH_ASDO,\n")
+        v.write("output\t\t\t\tFLASH_CS0_N,\n")
+        v.write("inout\t\t\t\tFLASH_DATA0,	//?\n")
+        v.write("output\t\t\t\tFLASH_DCLK,\n\n")
+
+    if check_PROTO_A.get():
+        v.write("//////////// PROTO_A //////////\n")
+        v.write("inout\t[7:0]\tPROTO_A,\n\n")
+
+    if check_PROTO_B.get():   
+        v.write("//////////// PROTO_B //////////\n")
+        v.write("inout\t[7:0]\tPROTO_B,\n\n")
+
+    if check_GPIO.get():
+        v.write("//////////// GPIO, GPIO connect SA-SB //////////\n")
+        v.write("input\t[7:0]\tSA,\n")
+        v.write("input\t[7:0]\tSB\n")
+
+
+    if check_ConnectGPIO.get():
+        v.write("//////////// GPIO, GPIO connect GPIO Default //////////\n")
+        v.write("inout\t[35:0]\tGPIO_D,\n\n")
 
     v.write(');\n')
     v.write('\n')
@@ -430,41 +542,55 @@ def gerar_arquivo_vhdl(diretorio=''):
 
     if check_clock.get():
         v.write('\t------------ CLOCK ----------\n')
-        v.write('\tADC_CLK_1O\t:in std_logic;\n\tMAX10_CLK1_50\t:in std_logic;,\n\tMAX10_CLK2_50\tin std_logic;\n')
-    if check_SDRAM_64.get():
-        v.write('\n\t------------ SDRAM ----------\n')
-        v.write('\tDRAM_ADDR\t\t       \t\t: out std_logic_vector(12 downto 0);\n')
-        v.write('\tDRAM_BA\t\t         \t\t: out std_logic_vector(1 downto 0);\n')
-        v.write('\tDRAM_CAS_N\t\t      \t\tDRAM_CAS_N,\n')
-        v.write('\tDRAM_CKE\t\t      \t\t: out std_logic;\n')
-        v.write('\tDRAM_CLK\t\t      \t\t: out std_logic;\n')
-        v.write('\tDRAM_CS_N\t\t      \t\t: out std_logic;\n')
-        v.write('\tDRAM_DQ\t\t        \t\t: inout std_logic_vector(15 downto 0);\n')
-        v.write('\tDRAM_LDQM\t\t      \t\t: out std_logic;\n')
-        v.write('\tDRAM_RAS_N\t\t      \t\t: out std_logic;\n')
-        v.write('\tDRAM_UDQM\t\t      \t\t: out std_logic;\n')
-        v.write('\tDRAM_WE_N\t\t      \t\t: out std_logic;\n')
-
-    if check_segmentos.get():
-        v.write('\n\t------------ SEG7 ----------\n')
-        v.write('\tHEX0\t\t \t\t: out std_logic_vector(7 downto 0);\n')
-        v.write('\tHEX1\t\t \t\t: out std_logic_vector(7 downto 0);\n')
-        v.write('\tHEX2\t\t \t\t: out std_logic_vector(7 downto 0);\n')
-        v.write('\tHEX3\t\t \t\t: out std_logic_vector(7 downto 0);\n')
-        v.write('\tHEX4\t\t \t\t: out std_logic_vector(7 downto 0);\n')
-        v.write('\tHEX5\t\t \t\t: out std_logic_vector(7 downto 0);\n')
-
-    if check_chave.get():
-        v.write('\n\t------------ KEY ----------\n')
-        v.write('\tKEY\t\t  \t\t: in std_logic_vector(1 downto 0);\n')
-
-    if check_LED.get():
-        v.write('\n\t------------ LED ----------\n')
-        v.write('\tLEDR\t\t \t\t: out std_logic_vector(9 downto 0);\n')
+        v.write('\tCLOCK_50MHz\t:in std_logic;\n\tCLK1_50\t:in std_logic;,\n\tMAX10_CLK2_50\tin std_logic;\n')
+    
+    if check_ext_clock.get(): 
+        v.write('\n\t------------ EXT_CLK ----------\n')
+        v.write('\tSMA_CLKIN \t\t       \t\t: in std_logic;\n')
+        v.write('\tGPIO0_CLKIN\t\t         \t\t: in std_logic_vector(1 downto 0);\n')
+        v.write('\tGPIO1_CLKIN\t\t      \t\t: in std_logic_vector(1 downto 0);\n')
+        v.write('\tSMA_CLKOUT\t\t      \t\t: out std_logic;\n')
+        v.write('\tGPIO0_CLKOUT\t\t      \t\t: out std_logic_vector(1 downto 0);\n')
+        v.write('\tGPIO1_CLKOUT\t\t      \t\t: out std_logic_vector(1 downto 0);\n')
 
     if check_SW.get():
         v.write('\n\t------------ SW ----------\n')
-        v.write('\tSW\t\t \t\t: in std_logic_vector(9 downto 0);\n')
+        v.write('\tSW\t\t \t\t: in std_logic_vector(3 downto 0);\n')
+
+    if check_chave.get():
+        v.write('\n\t------------ KEY ----------\n')
+        v.write('\tKEY\t\t  \t\t: in std_logic_vector(11 downto 0);\n')
+
+    if check_LED_RGB.get():
+        v.write('\n\t------------ LED_RGB ----------\n')
+        v.write('\tLED_R\t\t          \t\t: out std_logic;\n')
+        v.write('\tLED_G\t\t          \t\t: out std_logic;\n')
+        v.write('\tLED_B\t\t          \t\t: out std_logic;\n')
+
+    if check_segmentos.get():
+        v.write('\n\t------------ SEG7 ----------\n')
+        v.write('\tDISP0_D\t\t \t\t: out std_logic_vector(7 downto 0);\n')
+        v.write('\tDISP1_D\t\t \t\t: out std_logic_vector(7 downto 0);\n')
+
+    if check_LED_MATRIX.get():
+        v.write('\n\t------------ LED_MATRIX ----------\n')
+        v.write('\tLED_C\t\t \t\t: out std_logic_vector(4 downto 0);\n')
+        v.write('\tLED_R\t\t \t\t: out std_logic_vector(7 downto 0);\n')
+
+    if check_LCD.get():
+        v.write('\n\t------------ LCD ----------\n')
+        v.write('\tLCD_D\t\t          \t\t: inout std_logic_vector(7 downto 0);\n')
+        v.write('\tLCD_RS\t\t      \t\t: out std_logic;\n')
+        v.write('\tLCD_RW\t\t      \t\t: out std_logic;\n')
+        v.write('\tLCD_EN\t\t      \t\t: out std_logic;\n')
+        v.write('\tLCD_BACKLIGHT\t\t      \t\t: out std_logic;\n')
+
+    if check_UART.get():
+        v.write('\n\t------------ UART ----------\n')
+        v.write('\tUART_TXD\t\t          \t\t: out std_logic;\n')
+        v.write('\tUART_RXD\t\t          \t\t: in std_logic;\n')
+        v.write('\tUART_CTS\t\t          \t\t: in std_logic;\n')
+        v.write('\tUART_RTS\t\t          \t\t: out std_logic;\n')    
 
     if check_VGA.get():
         v.write('\n\t------------ VGA ----------\n')
@@ -474,28 +600,104 @@ def gerar_arquivo_vhdl(diretorio=''):
         v.write('\tVGA_HS\t\t      \t\t: out std_logic;\n')
         v.write('\tVGA_VS\t\t      \t\t: out std_logic;\n')
 
+    if check_SDRAM.get():
+        v.write("------------ SDRAM ----------\n")
+        v.write("\tDRAM_A\t\t\t: out std_logic_vector(12 downto 0);\n")
+        v.write("\tDRAM_BA\t\t\t: out std_logic_vector(1 downto 0);\n")
+        v.write("\tDRAM_CAS_N\t\t: out std_logic;\n")
+        v.write("\tDRAM_CKE\t\t: out std_logic;\n")
+        v.write("\tDRAM_CLK\t\t: out std_logic;\n")
+        v.write("\tDRAM_CS_N\t\t: out std_logic;\n")
+        v.write("\tDRAM_D\t\t\t: inout std_logic_vector(15 downto 0);\n")
+        v.write("\tDRAM_RAS_N\t\t: out std_logic;\n")
+        v.write("\tDRAM_DQM\t\t: out std_logic_vector(1 downto 0);\n")
+        v.write("\tDRAM_WE_N\t\t: out std_logic;\n\n")
+
+    if check_USB.get():
+        v.write("------------ USB ----------\n")
+        v.write("\tUSB_WR\t\t\t: out std std_logic;\n")
+        v.write("\tUSB_RD\t\t\t: out std_logic;\n")
+        v.write("\tUSB_D\t\t\t: inout std_logic_vector(7 downto 0);\n")
+        v.write("\tUSB_POWEREN_N\t: in std_logic;\n")
+        v.write("\tUSB_RXF_N\t\t: in std_logic;\n")
+        v.write("\tUSB_TXE_N\t\t: in std_logic;\n\n")
+
+    if check_SD_CARD.get():
+        v.write("------------ SD_CARD ----------\n")
+        v.write("\tSD_CMD\t\t\t: out std_logic;\n")
+        v.write("\tSD_CLK\t\t\t: out std_logic;\n")
+        v.write("\tSD_CD_N\t\t\t: out std_logic;\n")
+        v.write("\tSD_D\t\t\t: inout std_logic_vector(3 downto 0);\n\n")
+    
+    if check_I2C.get():
+        v.write("------------ I2C ----------\n")
+        v.write("\tI2C_SDA\t\t\t: inout std_logic;\n")
+        v.write("\tI2C_SCL\t\t\t: out std_logic;\n")
+        v.write("\tI2C_OVERTEMP_N\t: in std_logic;\n\n")
+    
+    if check_Ethernet.get():
+        v.write("------------ ETHERNET ----------\n")
+        v.write("\tETH_TXEN\t\t: out std_logic;\n")
+        v.write("\tETH_TXD\t\t: out std_logic_vector(3 downto 0);\n")
+        v.write("\tETH_RXER\t\t: in std_logic;\n")
+        v.write("\tETH_RXDV\t\t: in std_logic;\n")
+        v.write("\tETH_RXD\t\t: in std_logic_vector(3 downto 0);\n")
+        v.write("\tETH_MDIO\t\t: inout std_logic;\n")
+        v.write("\tETH_MDC\t\t: out std_logic;\n")
+        v.write("\tETH_CRS\t\t: in std_logic;\n")
+        v.write("\tETH_COL\t\t: in std_logic;\n")
+        v.write("\tETH_RST_N\t\t: out std_logic;\n")
+        v.write("\tETH_RXCLK\t\t: in std_logic;\n")
+        v.write("\tETH_TXCLK\t\t: in std_logic;\n")
+        v.write("\tETH_TXER\t\t: out std_logic;\n\n")
+
+    if check_ADC.get():
+        v.write("------------ ADC ----------\n")
+        v.write("\tADC_CNVST\t\t: out std_logic;\n")
+        v.write("\tADC_CS_N\t\t: out std_logic;\n")
+        v.write("\tADC_DOUT1\t\t: in std_logic;\n")
+        v.write("\tADC_DOUT2\t\t: in std_logic;\n")
+        v.write("\tADC_REFSEL\t\t: out std_logic;\n")
+        v.write("\tADC_SCLK\t\t: out std_logic;\n")
+        v.write("\tADC_SD\t\t\t: out std_logic;\n")
+        v.write("\tADC_SEL\t\t: out std_logic;\n")
+        v.write("\tADC_UB\t\t\t: out std_logic;\n\n")
+
+    if check_DAC.get():
+        v.write('\n\t------------ DAC ----------\n')
+        v.write('\tDAC_CLR\t\t          \t\t: out std_logic;\n')
+        v.write('\tDAC_CS_N\t\t      \t\t: out std_logic;\n')
+        v.write('\tDAC_DIN\t\t      \t\t: out std_logic;\n')
+        v.write('\tDAC_SCLK\t\t      \t\t: out std_logic;\n')
+
+    if check_flash.get():
+        v.write('\n\t------------ FLASH ----------\n')
+        v.write('\tFLASH_ASDO\t\t          \t\t: out std_logic;\n')
+        v.write('\tFLASH_CS0_N\t\t      \t\t: out std_logic;\n')
+        v.write('\tFLASH_DATA0\t\t      \t\t: inout std_logic;\n')
+        v.write('\tFLASH_DCLK\t\t      \t\t: out std_logic;\n')
+
+    if check_PROTO_A.get():
+        v.write('\n\t------------ PROTO_A ----------\n')
+        v.write('\tPROTO_A\t\t          \t\t: inout std_logic_vector(7 downto 0);\n')
+
+    if check_PROTO_B.get():
+        v.write('\n\t------------ PROTO_B ----------\n')
+        v.write('\tPROTO_B\t\t          \t\t: inout std_logic_vector(7 downto 0);\n')
+
     if check_GPIO.get():
-        v.write('\n\t------------ Accelerometer ----------\n')
-        v.write('\tGSENSOR_CS_N\t\t      \t\t: out std_logic;\n')
-        v.write('\tGSENSOR_INT\t\t  \t\t: in std_logic_vector(2 downto 1);\n')
-        v.write('\tGSENSOR_SCLK\t\t      \t\t: out std_logic;\n')
-        v.write('\tGSENSOR_SDI\t\t      \t\t: inout std_logic;\n')
-        v.write('\tGSENSOR_SDO\t\t      \t\t: inout std_logic;\n')
-
-    if check_LCD.get():
-        v.write('\n\t------------ Arduino ----------\n')
-        v.write('\tARDUINO_IO\t\t          \t\t: inout std_logic_vector(15 downto 0);\n')
-        v.write('\tARDUINO_RESET_N\t\t      \t\t: inout std_logic;\n')
-
+        v.write('\n\t------------ GPIO, GPIO connect SA-SB ----------\n')
+        v.write('\tSA\t\t      \t\t: in std_logic_vector(7 downto 0);\n')
+        v.write('\tSB\t\t  \t\t: in std_logic_vector(7 downto 0);\n')
+        
     if check_ConnectGPIO.get():
         v.write('\n\t------------ GPIO, GPIO connect to GPIO Default ----------\n')
-        v.write('\tSA_GPIO\t\t          \t\t: inout std_logic_vector(35 downto 0)\n')
+        v.write('\tGPIO_D\t\t          \t\t: inout std_logic_vector(35 downto 0)\n')
 
     v.write(');\n')
-    v.write('end entity DE10_LITE_FULL;\n')
-    v.write('\n')
-    v.write('architecture systembuilder of DE10_LITE_FULL is\n')
-    v.write('--=======================================================\n')
+    v.write("end entity MERCURIO_IV_FULL;\n")
+    v.write("architecture systembuilder of MERCURIO_IV_FULL is\n")
+    v.write("--=======================================================\n\n")
     v.write('--  SIGNAL, CONSTANT, COMPONENT, FUNCTION declarations\n')
     v.write('--=======================================================\n')
     v.write('begin\n')
@@ -557,10 +759,10 @@ def get_estados():
         'check_v':check_v.get(),
         'check_vhdl':check_vhdl.get(),
         'check_clock': check_clock.get(),
-        'check_SDRAM_64': check_SDRAM_64.get(),
+        'check_SDRAM_64': check_SDRAM.get(),
         'check_segmentos': check_segmentos.get(),
         'check_chave': check_chave.get(),
-        'check_LED': check_LED.get(),
+        'check_LED': check_LED_MATRIX.get(),
         'check_button': check_button.get(),
         'check_VGA': check_VGA.get(),
         'check_GPIO': check_GPIO.get(),
@@ -568,10 +770,11 @@ def get_estados():
         'check_Ethernet': check_Ethernet.get(),
         'check_I2C': check_I2C.get(),
         'check_RS232': check_RS232.get(),
-        'check_micro_SD': check_micro_SD.get(),
-        'check_SDRAM_512': check_SDRAM_512.get(),
+        'check_micro_SD': check_SD_CARD.get(),
+        'check_SDRAM_512': check_PROTO_A.get(),
+        'check_SDRAM_512': check_PROTO_B.get(),
         'check_PMOD': check_PMOD.get(),
-        'check_flash_64': check_flash_64.get(),
+        'check_flash_64': check_flash.get(),
         'check_LED_RGB': check_LED_RGB.get(),
         'check_ADC': check_ADC.get(),
         'check_DAC': check_DAC.get(),
@@ -599,10 +802,10 @@ def set_estados():
     check_vhdl.set(data['check_vhdl'])
     check_v.set(data['check_v'])
     check_clock.set(data['check_clock'])
-    check_SDRAM_64.set(data['check_SDRAM_64'])
+    check_SDRAM.set(data['check_SDRAM_64'])
     check_segmentos.set(data['check_segmentos'])
     check_chave.set(data['check_chave'])
-    check_LED.set(data['check_LED'])
+    check_LED_MATRIX.set(data['check_LED'])
     check_button.set(data['check_button'])
     check_VGA.set(data['check_VGA'])
     check_GPIO.set(data['check_GPIO'])
@@ -610,10 +813,11 @@ def set_estados():
     check_Ethernet.set(data['check_Ethernet'])
     check_I2C.set(data['check_I2C'])
     check_RS232.set(data['check_RS232'])
-    check_micro_SD.set(data['check_micro_SD'])
-    check_SDRAM_512.set(data['check_SDRAM_512'])
+    check_SD_CARD.set(data['check_micro_SD'])
+    check_PROTO_A.set(data['check_SDRAM_512'])
+    check_PROTO_B.set(data['check_SDRAM_512'])
     check_PMOD.set(data['check_PMOD'])
-    check_flash_64.set(data['check_flash_64'])
+    check_flash.set(data['check_flash_64'])
     check_LED_RGB.set(data['check_LED_RGB'])
     check_ADC.set(data['check_ADC'])
     check_DAC.set(data['check_DAC'])
@@ -637,12 +841,12 @@ Entry(frame_selecao, width=40, textvariable=nome_do_projeto).place(relx=0.05, re
 
 criar_selecao('VERILOG', check_v,1, 2)
 criar_selecao('CLOCK', check_clock, 1, 3)
-criar_selecao('LED 8X5', check_LED, 1, 4)
+criar_selecao('LED 8X5', check_LED_MATRIX, 1, 4)
 criar_selecao('Botão x12', check_button, 1, 5)
 criar_selecao('VGA', check_VGA, 1, 6)
 criar_selecao('LCD', check_LCD, 1, 7)
-criar_selecao('SDRAM 512Mbit', check_SDRAM_512, 1, 8)
-criar_selecao('Conector Micro SD', check_micro_SD, 1, 9)
+criar_selecao('SDRAM 512Mbit', check_SDRAM, 1, 8)
+criar_selecao('Conector Micro SD', check_SD_CARD, 1, 9)
 criar_selecao('Serial RS232', check_RS232, 1, 10)
 criar_selecao('Sensor de temperatura I²C', check_I2C, 1, 11)
 criar_selecao('10/100 Ethernet PHY', check_Ethernet, 1, 12)
@@ -652,12 +856,12 @@ criar_selecao('VHDL', check_vhdl,2, 2)
 criar_selecao('7-Segmentos X 2', check_segmentos, 2, 3)
 criar_selecao('Chave X4', check_chave, 2, 4)
 criar_selecao('Conector 2x GPIO', check_GPIO, 2, 5)
-criar_selecao('SDRAM, 64 MB', check_SDRAM_64, 2, 6)
+criar_selecao('SDRAM, 64 MB', check_PROTO_A, 2, 6)
 criar_selecao('SA e SB', check_SA_SB, 2, 7)
 criar_selecao('DAC', check_DAC, 2, 8)
 criar_selecao('ADC', check_ADC, 2, 9)
 criar_selecao('LED RGB', check_LED_RGB, 2, 10)
-criar_selecao('FLASH 64Mbit', check_flash_64, 2, 11)
+criar_selecao('FLASH 64Mbit', check_flash, 2, 11)
 criar_selecao('PMOD x2', check_PMOD, 2, 12)
 criar_selecao('ConnectGPIO', check_ConnectGPIO, 2, 13)
 
