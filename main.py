@@ -25,16 +25,13 @@ check_PROTO_B = BooleanVar()
 check_segmentos = BooleanVar()
 check_chave = BooleanVar()
 check_LED_MATRIX = BooleanVar()
-check_button = BooleanVar()
 check_VGA = BooleanVar()
 check_GPIO = BooleanVar()
 check_LCD = BooleanVar()
 check_Ethernet = BooleanVar()
 check_I2C = BooleanVar()
-check_RS232 = BooleanVar()
 check_SD_CARD = BooleanVar()
 check_SDRAM = BooleanVar()
-check_PMOD = BooleanVar()
 check_flash = BooleanVar()
 check_LED_RGB = BooleanVar()
 check_ADC = BooleanVar()
@@ -45,6 +42,7 @@ check_SW = BooleanVar()
 check_USB = BooleanVar()
 check_UART = BooleanVar()
 check_ConnectGPIO = BooleanVar()
+
 
 def get_diretorio_arquivos():
     diretorio = askdirectory()
@@ -109,10 +107,6 @@ def gerar_arquivo_qsf(diretorio=''):
         chave_buffer = f.read()
         f.close()
 
-    if check_button.get():  #KEY
-        f = open('auxiliar/qsf/KEY.aux', 'r')
-        button_buffer = f.read()
-        f.close()
 
     if check_segmentos.get():
         f = open('auxiliar/qsf/DISPLAY.aux', 'r')
@@ -166,17 +160,12 @@ def gerar_arquivo_qsf(diretorio=''):
 
     if check_SDRAM.get():
         f = open('auxiliar/qsf/SDRAM.aux', 'r')
-        sdram_64_buffer = f.read()
+        sdram_buffer = f.read()
         f.close()
 
     if check_Ethernet.get():
         f = open('auxiliar/qsf/ETHERNET.aux', 'r')
         ethernet_buffer = f.read()
-        f.close()
-
-    if check_PMOD.get():
-        f = open('auxiliar/qsf/PMOD.aux', 'r')
-        pmod_buffer = f.read()
         f.close()
 
     if check_GPIO.get():
@@ -196,7 +185,17 @@ def gerar_arquivo_qsf(diretorio=''):
 
     if  check_ConnectGPIO.get():
         f = open('auxiliar/qsf/GPIO.aux', 'r') ##MUDAR AQUI
-        check_connectGPIO_buffer = f.read()
+        connectGPIO_buffer = f.read()
+        f.close()
+
+    if check_PROTO_A.get():
+        f = open('auxiliar/qsf/PROTO_A.aux', 'r')
+        PROTO_A_buffer = f.read()
+        f.close()
+
+    if check_PROTO_B.get():
+        f = open('auxiliar/qsf/PROTO_B.aux', 'r')
+        PROTO_B_buffer = f.read()
         f.close()
 
     with open(nome_arquivo, 'w') as qsf:
@@ -259,10 +258,7 @@ def gerar_arquivo_qsf(diretorio=''):
             qsf.write(chave_buffer)
             qsf.write('\n')
 
-        if check_button.get(): #KEY
-            qsf.write(button_buffer)
-            qsf.write('\n')
-
+    
         if check_segmentos.get():
             qsf.write(segmentos_buffer)
             qsf.write('\n')
@@ -306,15 +302,11 @@ def gerar_arquivo_qsf(diretorio=''):
             qsf.write('\n')
 
         if check_SDRAM.get():
-            qsf.write(sdram_64_buffer)
+            qsf.write(sdram_buffer)
             qsf.write('\n')
 
         if check_Ethernet.get():
             qsf.write(ethernet_buffer)
-            qsf.write('\n')
-
-        if check_PMOD.get():
-            qsf.write(pmod_buffer)
             qsf.write('\n')
 
         if check_GPIO.get():
@@ -330,8 +322,18 @@ def gerar_arquivo_qsf(diretorio=''):
             qsf.write('\n')
 
         if check_ConnectGPIO.get():
-            qsf.write(check_connectGPIO_buffer)
+            qsf.write(connectGPIO_buffer)
             qsf.write('\n')
+
+        if check_PROTO_A.get():
+            qsf.write(PROTO_A_buffer)
+            qsf.write('\n')
+
+        if check_PROTO_B.get():
+            qsf.write(PROTO_B_buffer)
+            qsf.write('\n')
+
+        
 
 
 def criar_selecao(label, varialvel, coluna, posicao):
@@ -759,27 +761,25 @@ def get_estados():
         'check_v':check_v.get(),
         'check_vhdl':check_vhdl.get(),
         'check_clock': check_clock.get(),
-        'check_SDRAM_64': check_SDRAM.get(),
+        'check_SDRAM': check_SDRAM.get(),
         'check_segmentos': check_segmentos.get(),
         'check_chave': check_chave.get(),
         'check_LED': check_LED_MATRIX.get(),
-        'check_button': check_button.get(),
         'check_VGA': check_VGA.get(),
         'check_GPIO': check_GPIO.get(),
         'check_LCD': check_LCD.get(),
         'check_Ethernet': check_Ethernet.get(),
         'check_I2C': check_I2C.get(),
-        'check_RS232': check_RS232.get(),
         'check_micro_SD': check_SD_CARD.get(),
-        'check_SDRAM_512': check_PROTO_A.get(),
-        'check_SDRAM_512': check_PROTO_B.get(),
-        'check_PMOD': check_PMOD.get(),
-        'check_flash_64': check_flash.get(),
+        'check_PROTO_A': check_PROTO_A.get(),
+        'check_PROTO_B': check_PROTO_B.get(),
+        'check_flash': check_flash.get(),
         'check_LED_RGB': check_LED_RGB.get(),
         'check_ADC': check_ADC.get(),
         'check_DAC': check_DAC.get(),
         'check_SA_SB': check_SA_SB.get(),
         'check_SW' : check_SW(),
+        'check_LED_MATRIX' : check_LED_MATRIX(),
         'check_ConnectGPIO':check_ConnectGPIO()
     }
 
@@ -802,22 +802,19 @@ def set_estados():
     check_vhdl.set(data['check_vhdl'])
     check_v.set(data['check_v'])
     check_clock.set(data['check_clock'])
-    check_SDRAM.set(data['check_SDRAM_64'])
+    check_SDRAM.set(data['check_SDRAM'])
     check_segmentos.set(data['check_segmentos'])
     check_chave.set(data['check_chave'])
-    check_LED_MATRIX.set(data['check_LED'])
-    check_button.set(data['check_button'])
+    check_LED_MATRIX.set(data['check_LED_MATRIX'])
     check_VGA.set(data['check_VGA'])
     check_GPIO.set(data['check_GPIO'])
     check_LCD.set(data['check_LCD'])
     check_Ethernet.set(data['check_Ethernet'])
     check_I2C.set(data['check_I2C'])
-    check_RS232.set(data['check_RS232'])
     check_SD_CARD.set(data['check_micro_SD'])
-    check_PROTO_A.set(data['check_SDRAM_512'])
-    check_PROTO_B.set(data['check_SDRAM_512'])
-    check_PMOD.set(data['check_PMOD'])
-    check_flash.set(data['check_flash_64'])
+    check_PROTO_A.set(data['check_PROTO_A'])
+    check_PROTO_B.set(data['check_PROTO_B'])
+    check_flash.set(data['check_flash'])
     check_LED_RGB.set(data['check_LED_RGB'])
     check_ADC.set(data['check_ADC'])
     check_DAC.set(data['check_DAC'])
@@ -841,29 +838,27 @@ Entry(frame_selecao, width=40, textvariable=nome_do_projeto).place(relx=0.05, re
 
 criar_selecao('VERILOG', check_v,1, 2)
 criar_selecao('CLOCK', check_clock, 1, 3)
-criar_selecao('LED 8X5', check_LED_MATRIX, 1, 4)
-criar_selecao('Botão x12', check_button, 1, 5)
-criar_selecao('VGA', check_VGA, 1, 6)
-criar_selecao('LCD', check_LCD, 1, 7)
-criar_selecao('SDRAM 512Mbit', check_SDRAM, 1, 8)
-criar_selecao('Conector Micro SD', check_SD_CARD, 1, 9)
-criar_selecao('Serial RS232', check_RS232, 1, 10)
-criar_selecao('Sensor de temperatura I²C', check_I2C, 1, 11)
-criar_selecao('10/100 Ethernet PHY', check_Ethernet, 1, 12)
-criar_selecao('SW', check_SW, 1, 13)
+criar_selecao('LED Matrix', check_LED_MATRIX, 1, 4)
+criar_selecao('VGA', check_VGA, 1, 5)
+criar_selecao('LCD', check_LCD, 1, 6)
+criar_selecao('SDRAM', check_SDRAM, 1, 7)
+criar_selecao('Conector Micro SD', check_SD_CARD, 1, 8)
+criar_selecao('Sensor de temperatura I²C', check_I2C, 1, 9)
+criar_selecao('Ethernet', check_Ethernet, 1, 10)
+criar_selecao('SW', check_SW, 1, 11)
+criar_selecao('PROTO_A', check_PROTO_A, 1, 12)
 
 criar_selecao('VHDL', check_vhdl,2, 2)
 criar_selecao('7-Segmentos X 2', check_segmentos, 2, 3)
 criar_selecao('Chave X4', check_chave, 2, 4)
-criar_selecao('Conector 2x GPIO', check_GPIO, 2, 5)
-criar_selecao('SDRAM, 64 MB', check_PROTO_A, 2, 6)
-criar_selecao('SA e SB', check_SA_SB, 2, 7)
-criar_selecao('DAC', check_DAC, 2, 8)
-criar_selecao('ADC', check_ADC, 2, 9)
-criar_selecao('LED RGB', check_LED_RGB, 2, 10)
-criar_selecao('FLASH 64Mbit', check_flash, 2, 11)
-criar_selecao('PMOD x2', check_PMOD, 2, 12)
-criar_selecao('ConnectGPIO', check_ConnectGPIO, 2, 13)
+criar_selecao('GPIO', check_GPIO, 2, 5)
+criar_selecao('SA e SB', check_SA_SB, 2, 6)
+criar_selecao('DAC', check_DAC, 2, 7)
+criar_selecao('ADC', check_ADC, 2, 8)
+criar_selecao('LED RGB', check_LED_RGB, 2, 9)
+criar_selecao('FLASH', check_flash, 2, 10)
+criar_selecao('ConnectGPIO', check_ConnectGPIO, 2, 11)
+criar_selecao('PROTO_B', check_PROTO_B, 2, 12)
 
 window.resizable(False, False)
 window.mainloop()
